@@ -1,0 +1,79 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import pizzasData from "../../data/pizzas.json";
+import Layout from "../../layouts/Layout.astro";
+
+const categoriesTraduction: Record<string, string> = {
+    Classic: "Classique",
+    Specialty: "Spéciale",
+    Vegetarian: "Végétarienne",
+};
+
+const translatedPizzas = pizzasData.map((d) => ({
+    ...d,
+    categoryFr: categoriesTraduction[d.category] ?? d.category,
+}));
+
+const prixOptions = {
+    title: "Prix unitaire vs Nombre de commandes",
+    subtitle: "Corrélation entre le prix d'une pizza et son volume de ventes",
+    ariaLabel: "Nuage de points prix vs commandes.",
+    marginLeft: 80,
+    x: { label: "Prix ($) →" },
+    y: { label: "↑ Nombre de commandes" },
+    color: {
+        domain: ["Classique", "Spéciale", "Végétarienne"],
+        range: ["#570df8", "#f000b8", "#37cdbe"],
+        legend: true,
+    },
+    marks: [
+        Plot.dot(translatedPizzas, {
+            x: "price",
+            y: "orders",
+            fill: "categoryFr",
+            r: 3,
+            opacity: 0.6,
+        }),
+    ],
+};
+---
+
+<Layout>
+    <div style="margin-bottom: 1.5rem;">
+        <a
+            href="/pizzas"
+            style="text-decoration: none; color: #3182ce; font-weight: bold; font-size: 0.95rem;"
+            >← Retour aux Pizzas</a
+        >
+    </div>
+
+    <h1
+        style="text-align: center; margin-bottom: 2rem; font-size: 2rem; font-weight: bold;"
+    >
+        Prix vs Commandes
+    </h1>
+
+    <figure
+        style="display: flex; flex-direction: column; align-items: center; gap: 1rem;"
+    >
+        <PlotFigure options={prixOptions} />
+        <figcaption
+            style="max-width: 700px; text-align: center; font-size: 0.95rem; line-height: 1.5;"
+        >
+            Chaque point représente une pizza sur un jour donné. L'axe
+            horizontal indique son prix, l'axe vertical son nombre de commandes
+            ce jour-là. Les couleurs distinguent les catégories.
+        </figcaption>
+    </figure>
+
+    <div
+        style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;"
+    >
+        <a
+            href="/pizzas/jours"
+            style="text-decoration: none; color: #4a5568; font-weight: bold;"
+            >← Article précédent</a
+        >
+    </div>
+</Layout>

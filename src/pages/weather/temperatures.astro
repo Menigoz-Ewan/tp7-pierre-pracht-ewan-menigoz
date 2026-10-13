@@ -1,0 +1,71 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import weatherData from "../../data/weather.json";
+import Layout from "../../layouts/Layout.astro";
+
+const parsed = weatherData.map((d) => ({
+    ...d,
+    date: new Date(d.date),
+}));
+
+const tempOptions = {
+    title: "Températures quotidiennes à Seattle",
+    subtitle: "Températures maximales et minimales (2012–2015)",
+    ariaLabel: "Graphique en ligne des températures max et min sur la durée.",
+    marginLeft: 60,
+    x: { label: "Date →" },
+    y: { label: "↑ Température (°C)" },
+    color: {
+        domain: ["temp_max", "temp_min"],
+        range: ["#f000b8", "#570df8"],
+        legend: true,
+    },
+    marks: [
+        Plot.line(parsed, {
+            x: "date",
+            y: "temp_max",
+            stroke: "#f000b8",
+            strokeWidth: 1.5,
+        }),
+        Plot.line(parsed, {
+            x: "date",
+            y: "temp_min",
+            stroke: "#570df8",
+            strokeWidth: 1.5,
+        }),
+    ],
+};
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/weather">Météo</a></li>
+            <li>Températures</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">
+        Températures quotidiennes
+    </h1>
+
+    <figure class="flex flex-col items-center gap-4">
+        <PlotFigure options={tempOptions} />
+        <figcaption
+            class="max-w-2xl text-center text-sm opacity-80 leading-relaxed"
+        >
+            Ce graphique retrace l'évolution des températures maximales et
+            minimales à Seattle entre 2012 et 2015.
+        </figcaption>
+    </figure>
+
+    <div class="divider my-8"></div>
+
+    <div class="flex justify-end">
+        <a href="/weather/types" class="btn btn-outline btn-accent btn-sm"
+            >Types de météo →</a
+        >
+    </div>
+</Layout>

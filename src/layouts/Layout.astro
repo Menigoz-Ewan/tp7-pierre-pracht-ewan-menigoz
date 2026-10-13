@@ -1,26 +1,99 @@
 ---
+import Footer from "../components/footer.astro";
+import Header from "../components/header.astro";
 import "../styles/global.css";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Astro Basics</title>
-  </head>
-  <body>
-    <slot />
-  </body>
-</html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Ewan Menigoz</title>
+		<style>
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+			}
 
-<style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>
+			body {
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				background: linear-gradient(
+					135deg,
+					var(--color-base-200) 0%,
+					var(--color-base-300) 100%
+				);
+				color: var(--color-base-content);
+				overflow-x: hidden;
+				display: flex;
+				flex-direction: column;
+				min-height: 100vh;
+			}
+
+			.shape {
+				position: fixed;
+				border-radius: 50%;
+				background: linear-gradient(
+					135deg,
+					var(--color-primary) 0%,
+					var(--color-secondary) 100%
+				);
+				opacity: 0.15;
+				z-index: -1;
+				animation: float 8s ease-in-out infinite;
+			}
+
+			.shape-1 {
+				width: 400px;
+				height: 400px;
+				top: -150px;
+				left: -100px;
+			}
+
+			.shape-2 {
+				width: 250px;
+				height: 250px;
+				bottom: 50px;
+				right: -80px;
+				animation-delay: -4s;
+			}
+
+			@keyframes float {
+				0% {
+					transform: translateY(0px) scale(1);
+				}
+				50% {
+					transform: translateY(30px) scale(1.05);
+				}
+				100% {
+					transform: translateY(0px) scale(1);
+				}
+			}
+
+			main {
+				max-width: 900px;
+				margin: 3rem auto;
+				padding: 2.5rem;
+				background: var(--color-base-100);
+				border-radius: 20px;
+				box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+				width: 90%;
+				box-sizing: border-box;
+				flex: 1;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="shape shape-1"></div>
+		<div class="shape shape-2"></div>
+
+		<Header />
+
+		<main>
+			<slot />
+		</main>
+
+		<Footer />
+	</body>
+</html>

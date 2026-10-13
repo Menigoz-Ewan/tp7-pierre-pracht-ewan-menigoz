@@ -1,0 +1,98 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import pizzasData from "../../data/pizzas.json";
+import Layout from "../../layouts/Layout.astro";
+
+const joursTraduction: Record<string, string> = {
+    Monday: "Lundi",
+    Tuesday: "Mardi",
+    Wednesday: "Mercredi",
+    Thursday: "Jeudi",
+    Friday: "Vendredi",
+    Saturday: "Samedi",
+    Sunday: "Dimanche",
+};
+
+const joursOrdre = [
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi",
+    "Dimanche",
+];
+
+const translatedPizzas = pizzasData.map((d) => ({
+    ...d,
+    jourFr: joursTraduction[d.day_of_week] ?? d.day_of_week,
+}));
+
+const joursOptions = {
+    title: "Commandes par jour de la semaine",
+    subtitle: "Nombre total de commandes selon le jour",
+    ariaLabel: "Diagramme en barres des commandes par jour de la semaine.",
+    marginLeft: 80,
+    x: {
+        label: "Jour de la semaine",
+        domain: joursOrdre,
+    },
+    y: { label: "↑ Nombre de commandes" },
+    color: { scheme: "tableau10" },
+    marks: [
+        Plot.barY(
+            translatedPizzas,
+            Plot.groupX(
+                { y: "sum" },
+                { x: "jourFr", y: "orders", fill: "jourFr" },
+            ),
+        ),
+        Plot.ruleY([0]),
+    ],
+};
+---
+
+<Layout>
+    <div style="margin-bottom: 1.5rem;">
+        <a
+            href="/pizzas"
+            style="text-decoration: none; color: #3182ce; font-weight: bold; font-size: 0.95rem;"
+            >← Retour aux Pizzas</a
+        >
+    </div>
+
+    <h1
+        style="text-align: center; margin-bottom: 2rem; font-size: 2rem; font-weight: bold;"
+    >
+        Commandes par jour de la semaine
+    </h1>
+
+    <figure
+        style="display: flex; flex-direction: column; align-items: center; gap: 1rem;"
+    >
+        <PlotFigure options={joursOptions} />
+        <figcaption
+            style="max-width: 700px; text-align: center; font-size: 0.95rem; line-height: 1.5;"
+        >
+            Ce graphique compare le volume total de commandes selon le jour de
+            la semaine, permettant d'identifier les jours de pic d'activité dans
+            la pizzeria.
+        </figcaption>
+    </figure>
+
+    <div
+        style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;"
+    >
+        <a
+            href="/pizzas/revenus"
+            style="text-decoration: none; color: #4a5568; font-weight: bold;"
+            >← Article précédent</a
+        >
+        <a
+            href="/pizzas/prix"
+            style="text-decoration: none; color: #3182ce; font-weight: bold;"
+            >Article suivant →</a
+        >
+    </div>
+</Layout>

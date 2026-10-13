@@ -1,0 +1,80 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import weatherData from "../../data/weather.json";
+import Layout from "../../layouts/Layout.astro";
+
+const translations: Record<string, string> = {
+    drizzle: "Bruine",
+    rain: "Pluie",
+    sun: "Soleil",
+    snow: "Neige",
+    fog: "Brouillard",
+};
+
+const translatedData = weatherData.map((d) => ({
+    ...d,
+    weatherFr: translations[d.weather] ?? d.weather,
+}));
+
+const precipOptions = {
+    title: "Précipitations vs Vitesse du vent",
+    subtitle: "Chaque point = un jour, coloré par type de météo",
+    ariaLabel: "Nuage de points précipitations vs vent.",
+    x: { label: "Précipitations (mm) →" },
+    y: { label: "↑ Vent (m/s)" },
+    color: {
+        domain: ["Bruine", "Pluie", "Soleil", "Neige", "Brouillard"],
+        range: ["#37cdbe", "#570df8", "#ffbe00", "#aaaaaa", "#d1d5db"],
+        legend: true,
+    },
+    marks: [
+        Plot.dot(translatedData, {
+            x: "precipitation",
+            y: "wind",
+            fill: "weatherFr",
+            r: 3,
+            opacity: 0.6,
+        }),
+    ],
+};
+---
+
+<Layout>
+    <div style="margin-bottom: 1.5rem;">
+        <a
+            href="/weather"
+            style="text-decoration: none; color: #3182ce; font-weight: bold; font-size: 0.95rem;"
+            >← Retour à la Météo</a
+        >
+    </div>
+
+    <h1
+        style="text-align: center; margin-bottom: 2rem; font-size: 2rem; font-weight: bold;"
+    >
+        Précipitations & Vent
+    </h1>
+
+    <figure
+        style="display: flex; flex-direction: column; align-items: center; gap: 1rem;"
+    >
+        <PlotFigure options={precipOptions} />
+        <figcaption
+            style="max-width: 700px; text-align: center; font-size: 0.95rem; color: #555; line-height: 1.5;"
+        >
+            Chaque point représente une journée. L'axe horizontal indique le
+            niveau de précipitations (mm), l'axe vertical la vitesse du vent
+            (m/s). Les couleurs distinguent les conditions météo du jour.
+        </figcaption>
+    </figure>
+
+    <div
+        style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;"
+    >
+        <a
+            href="/weather/types"
+            style="text-decoration: none; color: #4a5568; font-weight: bold;"
+            >← Article précédent</a
+        >
+    </div>
+</Layout>

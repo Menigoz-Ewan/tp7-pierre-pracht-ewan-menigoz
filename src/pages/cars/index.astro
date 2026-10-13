@@ -1,0 +1,31 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li>Voitures</li>
+        </ul>
+    </div>
+
+    <h1 class="text-3xl font-extrabold text-center mb-2">Voitures</h1>
+    <p class="text-center text-gray-500 mb-10">
+        Analyse des performances automobiles
+    </p>
+
+    <div class="divider max-w-xl mx-auto text-sm opacity-50 my-6">
+        Routes paramétriques (TP6)
+    </div>
+
+    <nav class="flex justify-center flex-wrap gap-4 mb-10">
+        <a href="/cars/cylinders" class="btn btn-sm btn-outline btn-primary"
+            >Routes par Cylindres</a
+        >
+    </nav>
+
+    <p class="text-center text-gray-400 text-sm">
+        Sélectionne un lien ci-dessus pour explorer les données.
+    </p>
+</Layout>

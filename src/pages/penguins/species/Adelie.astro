@@ -1,0 +1,25 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import GraphicSpecies from "../../../components/GraphicSpecies.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li><a href="/penguins/especes">Espèces</a></li>
+            <li>Adélie</li>
+        </ul>
+    </div>
+
+    <GraphicSpecies species="Adelie" />
+
+    <div class="divider my-8"></div>
+
+    <div class="flex justify-start">
+        <a href="/penguins/especes" class="btn btn-outline btn-sm"
+            >← Retour aux espèces</a
+        >
+    </div>
+</Layout>

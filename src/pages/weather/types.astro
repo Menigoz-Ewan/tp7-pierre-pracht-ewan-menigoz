@@ -1,0 +1,82 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import weatherData from "../../data/weather.json";
+import Layout from "../../layouts/Layout.astro";
+
+const translations: Record<string, string> = {
+    drizzle: "Bruine",
+    rain: "Pluie",
+    sun: "Soleil",
+    snow: "Neige",
+    fog: "Brouillard",
+};
+
+const translatedData = weatherData.map((d) => ({
+    ...d,
+    weatherFr: translations[d.weather] ?? d.weather,
+}));
+
+const typesOptions = {
+    title: "Répartition des types de météo",
+    subtitle: "Nombre de jours par condition météorologique",
+    ariaLabel: "Diagramme en barres des types de météo.",
+    x: { label: "Type de météo" },
+    y: { label: "↑ Nombre de jours" },
+    color: {
+        domain: ["Bruine", "Pluie", "Soleil", "Neige", "Brouillard"],
+        range: ["#37cdbe", "#570df8", "#ffbe00", "#aaaaaa", "#d1d5db"],
+    },
+    marks: [
+        Plot.barY(
+            translatedData,
+            Plot.groupX({ y: "count" }, { x: "weatherFr", fill: "weatherFr" }),
+        ),
+        Plot.ruleY([0]),
+    ],
+};
+---
+
+<Layout>
+    <div style="margin-bottom: 1.5rem;">
+        <a
+            href="/weather"
+            style="text-decoration: none; color: #3182ce; font-weight: bold; font-size: 0.95rem;"
+            >← Retour à la Météo</a
+        >
+    </div>
+
+    <h1
+        style="text-align: center; margin-bottom: 2rem; font-size: 2rem; font-weight: bold;"
+    >
+        Types de météo
+    </h1>
+
+    <figure
+        style="display: flex; flex-direction: column; align-items: center; gap: 1rem;"
+    >
+        <PlotFigure options={typesOptions} />
+        <figcaption
+            style="max-width: 700px; text-align: center; font-size: 0.95rem; color: #555; line-height: 1.5;"
+        >
+            Ce diagramme indique combien de jours ont été enregistrés pour
+            chaque condition météo (bruine, pluie, soleil, neige, brouillard)
+            sur l'ensemble de la période observée.
+        </figcaption>
+    </figure>
+
+    <div
+        style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;"
+    >
+        <a
+            href="/weather/temperatures"
+            style="text-decoration: none; color: #4a5568; font-weight: bold;"
+            >← Article précédent</a
+        >
+        <a
+            href="/weather/precipitations"
+            style="text-decoration: none; color: #3182ce; font-weight: bold;"
+            >Article suivant →</a
+        >
+    </div>
+</Layout>

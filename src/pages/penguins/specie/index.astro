@@ -1,0 +1,35 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import penguins from "../../../data/penguins.json";
+
+// 1. On extrait la liste unique des espèces
+const speciesList = [...new Set(penguins.map((p) => p.species))];
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li>Routes par espèce</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">
+        Choisissez une espèce
+    </h1>
+
+    <!-- 2. On génère un lien pour chaque espèce -->
+    <div class="flex justify-center gap-4 flex-wrap">
+        {
+            speciesList.map((species) => (
+                <a
+                    href={`/penguins/specie/${species}`}
+                    class="btn btn-outline btn-primary"
+                >
+                    Voir les manchots {species}
+                </a>
+            ))
+        }
+    </div>
+</Layout>

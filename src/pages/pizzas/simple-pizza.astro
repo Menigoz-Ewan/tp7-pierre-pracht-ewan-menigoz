@@ -1,0 +1,55 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/pizzas">Pizzas</a></li>
+            <li>Pizza Données Simples</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">
+        2. Pizza - Données simples
+    </h1>
+
+    <figure class="flex flex-col items-center gap-4">
+        <div
+            id="graphique"
+            class="w-full flex justify-center min-h-[400px] overflow-x-auto"
+        >
+        </div>
+    </figure>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import pizzaData from "../../data/pizzas.json";
+
+    function initGraph() {
+        const divGraphique = document.querySelector("#graphique");
+        if (!divGraphique) return;
+
+        divGraphique.innerHTML = "";
+
+        const plot = Plot.plot({
+            color: { legend: true },
+            x: { label: "Nombre de commandes" },
+            y: { label: "Revenus ($)" },
+            marks: [
+                Plot.dot(pizzaData, {
+                    x: "orders",
+                    y: "revenue",
+                    stroke: "category",
+                }),
+            ],
+        });
+
+        divGraphique.append(plot);
+    }
+
+    document.addEventListener("DOMContentLoaded", initGraph);
+    document.addEventListener("astro:page-load", initGraph);
+</script>

@@ -1,0 +1,31 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import penguins from "../../../data/penguins.json";
+
+const islandList = [...new Set(penguins.map((p) => p.island))];
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li>Index des îles</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">Choisissez une île</h1>
+
+    <div class="flex justify-center gap-4 flex-wrap">
+        {
+            islandList.map((island) => (
+                <a
+                    href={`/penguins/island/${island}`}
+                    class="btn btn-outline btn-accent"
+                >
+                    Voir les manchots de {island}
+                </a>
+            ))
+        }
+    </div>
+</Layout>

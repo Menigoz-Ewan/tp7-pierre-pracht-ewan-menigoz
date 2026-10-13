@@ -1,0 +1,66 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import penguins from "../../../data/penguins.json";
+
+export function getStaticPaths() {
+    const islandList = [...new Set(penguins.map((p) => p.island))];
+
+    return islandList.map((island) => {
+        return {
+            params: { island: island },
+        };
+    });
+}
+
+const { island } = Astro.params;
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li><a href="/penguins/island">Îles (Index)</a></li>
+            <li class="font-bold">{island}</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">Île : {island}</h1>
+
+    <div
+        id="graphique"
+        class="w-full flex justify-center min-h-[400px] overflow-x-auto"
+        data-island={island}
+    >
+    </div>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import penguins from "../../../data/penguins.json";
+
+    function renderPlot() {
+        const container = document.querySelector("#graphique");
+        if (!container) return;
+
+        container.innerHTML = "";
+        const currentIsland = container.getAttribute("data-island");
+
+        const plot = Plot.plot({
+            color: { legend: true },
+            marks: [
+                Plot.dot(penguins, {
+                    x: "culmen_length_mm",
+                    y: "culmen_depth_mm",
+                    stroke: "island",
+                    filter: (d) => d.island === currentIsland,
+                }),
+            ],
+        });
+
+        container.append(plot);
+    }
+
+    document.addEventListener("DOMContentLoaded", renderPlot);
+    document.addEventListener("astro:page-load", renderPlot);
+</script>

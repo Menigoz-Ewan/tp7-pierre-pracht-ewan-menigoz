@@ -1,0 +1,82 @@
+﻿---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import penguinsData from "../../data/penguins.json";
+import Layout from "../../layouts/Layout.astro";
+
+const filteredPenguins = penguinsData.map((p) => ({
+    species: p.species,
+}));
+
+const barOptions = {
+    title: "Répartition par espèce",
+    subtitle: "Nombre total d'individus recensés",
+    ariaLabel:
+        "Diagramme en barres montrant la quantité de pingouins par espèce.",
+    x: { label: "Espèce" },
+    y: { label: "↑ Nombre d'individus" },
+    color: {
+        domain: ["Adelie", "Gentoo", "Chinstrap"],
+        range: ["#570df8", "#f000b8", "#37cdbe"],
+    },
+    marks: [
+        Plot.barY(
+            filteredPenguins,
+            Plot.groupX({ y: "count" }, { x: "species", fill: "species" }),
+        ),
+        Plot.ruleY([0]),
+    ],
+};
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li>Espèces</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">Espèces</h1>
+
+    <div class="flex justify-center mb-12">
+        <select
+            id="species"
+            class="select select-bordered select-primary w-full max-w-xs text-lg"
+        >
+            <option disabled selected>Choisissez une espèce</option>
+            <option value="Adelie">Adélie</option>
+            <option value="Chinstrap">Chinstrap</option>
+            <option value="Gentoo">Gentoo</option>
+        </select>
+    </div>
+
+    <figure class="flex flex-col items-center gap-4">
+        <PlotFigure options={barOptions} />
+        <figcaption
+            class="max-w-2xl text-center text-sm opacity-80 leading-relaxed"
+        >
+            Ce diagramme en barres verticales indique le nombre total
+            d'individus recensés pour chaque espèce.
+        </figcaption>
+    </figure>
+
+    <div class="divider my-8"></div>
+
+    <div class="flex justify-between">
+        <a href="/penguins/biometrie" class="btn btn-outline btn-sm"
+            >← Biométrie</a
+        >
+        <a href="/penguins/iles" class="btn btn-outline btn-primary btn-sm"
+            >Îles →</a
+        >
+    </div>
+</Layout>
+
+<script>
+    document.querySelector("#species")?.addEventListener("change", (evt) => {
+        const value = (evt.target as HTMLSelectElement).value;
+        location.pathname = "/penguins/species/" + value + "/";
+    });
+</script>

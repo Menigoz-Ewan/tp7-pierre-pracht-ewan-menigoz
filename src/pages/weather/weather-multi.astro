@@ -1,0 +1,101 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li>Météo Multi-filtres</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">
+        4. Météo - Plusieurs filtres
+    </h1>
+
+    <div class="flex flex-wrap justify-center gap-4 mb-8">
+        <select
+            id="weatherType"
+            class="select select-bordered select-accent w-full max-w-xs"
+        >
+            <option value="">Tous les temps</option>
+            <option value="sun">Soleil</option>
+            <option value="rain">Pluie</option>
+            <option value="drizzle">Bruine</option>
+            <option value="snow">Neige</option>
+            <option value="fog">Brouillard</option>
+        </select>
+
+        <select
+            id="yearFilter"
+            class="select select-bordered select-info w-full max-w-xs"
+        >
+            <option value="">Toutes les années</option>
+            <option value="2012">2012</option>
+            <option value="2013">2013</option>
+            <option value="2014">2014</option>
+            <option value="2015">2015</option>
+        </select>
+    </div>
+
+    <figure class="flex flex-col items-center gap-4">
+        <div
+            id="graphique"
+            class="w-full flex justify-center min-h-[400px] overflow-x-auto"
+        >
+        </div>
+    </figure>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import weatherData from "../../data/weather.json";
+
+    function initPage() {
+        const selectWeather = document.querySelector(
+            "#weatherType",
+        ) as HTMLSelectElement;
+        const selectYear = document.querySelector(
+            "#yearFilter",
+        ) as HTMLSelectElement;
+        const divGraphique = document.querySelector("#graphique");
+
+        if (!selectWeather || !selectYear || !divGraphique) return;
+
+        function renderPlot() {
+            const selectedWeather = selectWeather.value;
+            const selectedYear = selectYear.value;
+
+            divGraphique.innerHTML = "";
+
+            const plot = Plot.plot({
+                color: { legend: true },
+                x: { label: "Température Min (°C)" },
+                y: { label: "Température Max (°C)" },
+                marks: [
+                    Plot.dot(weatherData, {
+                        x: "temp_min",
+                        y: "temp_max",
+                        stroke: "weather",
+                        filter: (d) =>
+                            (selectedWeather === "" ||
+                                d.weather === selectedWeather) &&
+                            (selectedYear === "" ||
+                                d.date.substring(0, 4) === selectedYear),
+                    }),
+                ],
+            });
+
+            divGraphique.append(plot);
+        }
+
+        selectWeather.addEventListener("change", renderPlot);
+        selectYear.addEventListener("change", renderPlot);
+
+        renderPlot();
+    }
+
+    document.addEventListener("DOMContentLoaded", initPage);
+    document.addEventListener("astro:page-load", initPage);
+</script>

@@ -1,0 +1,32 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import penguins from "../../../data/penguins.json";
+
+// Certains manchots peuvent ne pas avoir de sexe défini dans les données, on gère ce cas en filtrant.
+const sexList = [...new Set(penguins.map((p) => p.sex).filter(Boolean))];
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li>Index des sexes</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">Choisissez un sexe</h1>
+
+    <div class="flex justify-center gap-4 flex-wrap">
+        {
+            sexList.map((sex) => (
+                <a
+                    href={`/penguins/sex/${sex}`}
+                    class="btn btn-outline btn-secondary"
+                >
+                    Voir les manchots {sex}
+                </a>
+            ))
+        }
+    </div>
+</Layout>

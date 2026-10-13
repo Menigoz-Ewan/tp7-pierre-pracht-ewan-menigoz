@@ -1,0 +1,107 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import penguins from "../../data/penguins.json";
+
+// Extraction dynamique de la liste des espèces sans doublons
+const speciesList = [...new Set(penguins.map((p) => p.species))];
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li>Toutes les espèces</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">
+        Tous les graphiques (Onglets dynamiques)
+    </h1>
+
+    <!-- Création dynamique des onglets DaisyUI -->
+    <div class="tabs tabs-lifted justify-center mb-8" id="species-tabs">
+        {
+            speciesList.map((species, index) => (
+                <a
+                    class={`tab tab-lg ${index === 0 ? "tab-active" : ""}`}
+                    data-target={`graph-${species}`}
+                >
+                    {species}
+                </a>
+            ))
+        }
+    </div>
+
+    <!-- Création dynamique des conteneurs vides pour Observable Plot -->
+    <div id="graphs-container">
+        {
+            speciesList.map((species, index) => (
+                <div
+                    id={`graph-${species}`}
+                    class={`graph-content w-full flex justify-center min-h-[400px] overflow-x-auto ${index === 0 ? "block" : "hidden"}`}
+                    data-species={species}
+                />
+            ))
+        }
+    </div>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import penguins from "../../data/penguins.json";
+
+    function initDynamicTabs() {
+        const tabs = document.querySelectorAll(".tab");
+        const contents = document.querySelectorAll(".graph-content");
+
+        if (tabs.length === 0 || contents.length === 0) return;
+
+        // 1. Gestion des clics sur les onglets
+        tabs.forEach((tab) => {
+            tab.addEventListener("click", (e) => {
+                // Retirer l'état actif partout
+                tabs.forEach((t) => t.classList.remove("tab-active"));
+                (e.target as HTMLElement).classList.add("tab-active");
+
+                // Afficher le bon contenu
+                const targetId = (e.target as HTMLElement).getAttribute(
+                    "data-target",
+                );
+                contents.forEach((content) => {
+                    if (content.id === targetId) {
+                        content.classList.remove("hidden");
+                        content.classList.add("block");
+                    } else {
+                        content.classList.remove("block");
+                        content.classList.add("hidden");
+                    }
+                });
+            });
+        });
+
+        // 2. Génération d'un graphique par conteneur
+        contents.forEach((container) => {
+            container.innerHTML = "";
+            const species = container.getAttribute("data-species");
+
+            const plot = Plot.plot({
+                color: { legend: true },
+                marks: [
+                    Plot.dot(penguins, {
+                        x: "culmen_length_mm",
+                        y: "culmen_depth_mm",
+                        stroke: "species",
+                        // On filtre le graphique selon l'attribut data-species de la div
+                        filter: (d) => d.species === species,
+                    }),
+                ],
+            });
+
+            container.append(plot);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", initDynamicTabs);
+    document.addEventListener("astro:page-load", initDynamicTabs);
+</script>

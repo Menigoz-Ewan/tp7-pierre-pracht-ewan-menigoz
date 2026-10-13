@@ -1,0 +1,54 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li>Simple</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">
+        1. Graphique Simple
+    </h1>
+
+    <figure class="flex flex-col items-center gap-4">
+        <!-- La div vide qui va recevoir le graphique -->
+        <div
+            id="graphique"
+            class="w-full flex justify-center min-h-[400px] overflow-x-auto"
+        >
+        </div>
+    </figure>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+
+    function initGraph() {
+        const divGraphique = document.querySelector("#graphique");
+
+        // Si la div n'existe pas sur la page, on arrête
+        if (!divGraphique) return;
+
+        // On vide la div pour éviter les doublons
+        divGraphique.innerHTML = "";
+
+        // Création du graphique
+        const plot = Plot.rectY(
+            { length: 10000 },
+            Plot.binX({ y: "count" }, { x: Math.random }),
+        ).plot();
+
+        // Ajout à la page
+        divGraphique.append(plot);
+    }
+
+    // Exécution au chargement classique de la page
+    document.addEventListener("DOMContentLoaded", initGraph);
+
+    // Exécution si Astro utilise les transitions de vue (sans rechargement complet)
+    document.addEventListener("astro:page-load", initGraph);
+</script>

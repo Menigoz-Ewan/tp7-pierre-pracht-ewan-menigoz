@@ -1,0 +1,57 @@
+﻿---
+import Layout from "../../layouts/Layout.astro";
+import GraphicSpecies from "../../components/GraphicSpecies.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li>Slider comparatif</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">
+        Comparateur des espèces
+    </h1>
+
+    <div
+        class="flex justify-center mb-12 sticky top-4 z-10 bg-base-100/80 p-2 rounded-box backdrop-blur-sm"
+    >
+        <select
+            id="species-slider"
+            class="select select-bordered select-secondary w-full max-w-xs text-lg"
+        >
+            <option disabled selected>Glisser vers une espèce</option>
+            <option value="adelie">Adélie</option>
+            <option value="gentoo">Gentoo</option>
+            <option value="chinstrap">Chinstrap</option>
+        </select>
+    </div>
+
+    <div
+        class="flex overflow-x-auto snap-x snap-mandatory gap-8 pb-10 scroll-smooth"
+    >
+        <div id="adelie" class="item min-w-full snap-center">
+            <GraphicSpecies species="Adelie" />
+        </div>
+
+        <div id="gentoo" class="item min-w-full snap-center">
+            <GraphicSpecies species="Gentoo" />
+        </div>
+
+        <div id="chinstrap" class="item min-w-full snap-center">
+            <GraphicSpecies species="Chinstrap" />
+        </div>
+    </div>
+</Layout>
+
+<script>
+    document
+        .querySelector("#species-slider")
+        ?.addEventListener("change", (evt) => {
+            const value = (evt.target as HTMLSelectElement).value;
+            location.hash = "#" + value;
+        });
+</script>

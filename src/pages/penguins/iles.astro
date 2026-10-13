@@ -1,0 +1,69 @@
+﻿---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import penguinsData from "../../data/penguins.json";
+import Layout from "../../layouts/Layout.astro";
+
+const traductionsIles: Record<string, string> = {
+    Biscoe: "Gentoo",
+    Dream: "Chinstrap",
+    Torgersen: "Adelie",
+};
+
+const filteredPenguins = penguinsData.map((p) => ({
+    island: p.island ? traductionsIles[p.island] || p.island : p.island,
+    species: p.species,
+}));
+
+const islandOptions = {
+    title: "Répartition par île",
+    subtitle: "Répartition des espèces par île",
+    ariaLabel:
+        "Diagramme en barres horizontales montrant la répartition des espèces par île.",
+    marginLeft: 90,
+    x: { label: "Fréquence →" },
+    y: { label: null },
+    color: {
+        domain: ["Adelie", "Gentoo", "Chinstrap"],
+        range: ["#570df8", "#f000b8", "#37cdbe"],
+    },
+    marks: [
+        Plot.barX(
+            filteredPenguins,
+            Plot.groupY({ x: "count" }, { y: "island", fill: "species" }),
+        ),
+        Plot.ruleX([0]),
+    ],
+};
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li>Îles</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">Îles</h1>
+
+    <figure class="flex flex-col items-center gap-4">
+        <PlotFigure options={islandOptions} />
+        <figcaption
+            class="max-w-2xl text-center text-sm opacity-80 leading-relaxed"
+        >
+            Ce diagramme en barres horizontales présente la répartition des
+            espèces au sein de chaque île.
+        </figcaption>
+    </figure>
+
+    <div class="divider my-8"></div>
+
+    <div class="flex justify-between">
+        <a href="/penguins/especes" class="btn btn-outline btn-sm">← Espèces</a>
+        <a href="/penguins/slider" class="btn btn-outline btn-primary btn-sm"
+            >Slider →</a
+        >
+    </div>
+</Layout>

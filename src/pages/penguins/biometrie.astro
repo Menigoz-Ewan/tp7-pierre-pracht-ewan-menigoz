@@ -1,0 +1,65 @@
+﻿---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import penguinsData from "../../data/penguins.json";
+import Layout from "../../layouts/Layout.astro";
+
+const filteredPenguins = penguinsData.map((p) => ({
+    body_mass_g: p.body_mass_g,
+    flipper_length_mm: p.flipper_length_mm,
+    species: p.species,
+}));
+
+const scatterOptions = {
+    title: "Analyse morphométrique",
+    subtitle: "Masse corporelle vs Longueur des nageoires",
+    ariaLabel:
+        "Nuage de points montrant une corrélation positive entre la masse corporelle et la longueur des nageoires.",
+    x: { label: "Masse corporelle (g) →" },
+    y: { label: "↑ Longueur des nageoires (mm)" },
+    color: {
+        legend: true,
+        domain: ["Adelie", "Chinstrap", "Gentoo"],
+        range: ["#570df8", "#37cdbe", "#f000b8"],
+    },
+    marks: [
+        Plot.frame(),
+        Plot.dot(filteredPenguins, {
+            x: "body_mass_g",
+            y: "flipper_length_mm",
+            stroke: "species",
+        }),
+    ],
+};
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/penguins">Pingouins</a></li>
+            <li>Biométrie</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">Biométrie</h1>
+
+    <figure class="flex flex-col items-center gap-4">
+        <PlotFigure options={scatterOptions} />
+        <figcaption
+            class="max-w-2xl text-center text-sm opacity-80 leading-relaxed"
+        >
+            Ce nuage de points met en relation la masse corporelle en grammes
+            (axe horizontal) et la longueur des nageoires en millimètres (axe
+            vertical).
+        </figcaption>
+    </figure>
+
+    <div class="divider my-8"></div>
+
+    <div class="flex justify-end">
+        <a href="/penguins/especes" class="btn btn-outline btn-primary btn-sm"
+            >Espèces →</a
+        >
+    </div>
+</Layout>

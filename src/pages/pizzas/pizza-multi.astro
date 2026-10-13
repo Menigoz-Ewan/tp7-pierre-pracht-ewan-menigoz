@@ -1,0 +1,103 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/pizzas">Pizzas</a></li>
+            <li>Pizza Multi-filtres</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">
+        4. Pizza - Plusieurs filtres
+    </h1>
+
+    <div class="flex flex-wrap justify-center gap-4 mb-8">
+        <select
+            id="pizzaCategory"
+            class="select select-bordered select-accent w-full max-w-xs"
+        >
+            <option value="">Toutes les catégories</option>
+            <option value="Classic">Classic</option>
+            <option value="Specialty">Specialty</option>
+            <option value="Vegetarian">Vegetarian</option>
+        </select>
+
+        <select
+            id="pizzaDay"
+            class="select select-bordered select-info w-full max-w-xs"
+        >
+            <option value="">Tous les jours</option>
+            <option value="Monday">Lundi</option>
+            <option value="Tuesday">Mardi</option>
+            <option value="Wednesday">Mercredi</option>
+            <option value="Thursday">Jeudi</option>
+            <option value="Friday">Vendredi</option>
+            <option value="Saturday">Samedi</option>
+            <option value="Sunday">Dimanche</option>
+        </select>
+    </div>
+
+    <figure class="flex flex-col items-center gap-4">
+        <div
+            id="graphique"
+            class="w-full flex justify-center min-h-[400px] overflow-x-auto"
+        >
+        </div>
+    </figure>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import pizzaData from "../../data/pizzas.json";
+
+    function initPage() {
+        const selectCategory = document.querySelector(
+            "#pizzaCategory",
+        ) as HTMLSelectElement;
+        const selectDay = document.querySelector(
+            "#pizzaDay",
+        ) as HTMLSelectElement;
+        const divGraphique = document.querySelector("#graphique");
+
+        if (!selectCategory || !selectDay || !divGraphique) return;
+
+        function renderPlot() {
+            const selectedCategory = selectCategory.value;
+            const selectedDay = selectDay.value;
+
+            divGraphique.innerHTML = "";
+
+            const plot = Plot.plot({
+                color: { legend: true },
+                x: { label: "Nombre de commandes" },
+                y: { label: "Revenus ($)" },
+                marks: [
+                    Plot.dot(pizzaData, {
+                        x: "orders",
+                        y: "revenue",
+                        stroke: "category",
+                        filter: (d) =>
+                            (selectedCategory === "" ||
+                                d.category === selectedCategory) &&
+                            (selectedDay === "" ||
+                                d.day_of_week === selectedDay),
+                    }),
+                ],
+            });
+
+            divGraphique.append(plot);
+        }
+
+        selectCategory.addEventListener("change", renderPlot);
+        selectDay.addEventListener("change", renderPlot);
+
+        renderPlot();
+    }
+
+    document.addEventListener("DOMContentLoaded", initPage);
+    document.addEventListener("astro:page-load", initPage);
+</script>

@@ -1,0 +1,46 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <h1 class="text-3xl font-extrabold text-center mb-2">Météo</h1>
+    <p class="text-center text-gray-500 mb-8">
+        Données météorologiques de Seattle (2012–2015)
+    </p>
+
+    <nav class="flex flex-wrap justify-center gap-4 mb-6">
+        <a href="/weather/temperatures" class="btn btn-sm btn-primary"
+            >Températures</a
+        >
+        <a href="/weather/types" class="btn btn-sm btn-secondary"
+            >Types de météo</a
+        >
+        <a href="/weather/precipitations" class="btn btn-sm btn-accent"
+            >Précipitations & Vent</a
+        >
+    </nav>
+
+    <div class="divider max-w-xl mx-auto text-sm opacity-50 my-6">
+        Nouveaux graphiques côté client (TP4)
+    </div>
+
+    <nav class="flex flex-wrap justify-center gap-4 mb-10">
+        <a href="/weather/simple" class="btn btn-sm btn-outline">1. Simple</a>
+        <a
+            href="/weather/simple-weather"
+            class="btn btn-sm btn-outline btn-primary">2. Données simples</a
+        >
+        <a
+            href="/weather/weather-filter"
+            class="btn btn-sm btn-outline btn-secondary">3. Filtre unique</a
+        >
+        <a
+            href="/weather/weather-multi"
+            class="btn btn-sm btn-outline btn-accent">4. Multi-filtres</a
+        >
+    </nav>
+
+    <p class="text-center text-gray-400 text-sm">
+        Sélectionne un graphique ci-dessus pour explorer les données.
+    </p>
+</Layout>

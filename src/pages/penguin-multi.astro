@@ -1,0 +1,116 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li>Penguin Multi-filtres</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">
+        4. Penguin avec plusieurs filtres
+    </h1>
+
+    <!-- Les 3 selects demandés dans l'énoncé -->
+    <div class="flex flex-wrap justify-center gap-4 mb-8">
+        <select
+            id="species"
+            class="select select-bordered select-primary w-full max-w-xs"
+        >
+            <option value="">Toutes les espèces</option>
+            <option value="Adelie">Adelie</option>
+            <option value="Chinstrap">Chinstrap</option>
+            <option value="Gentoo">Gentoo</option>
+        </select>
+
+        <select
+            id="island"
+            class="select select-bordered select-secondary w-full max-w-xs"
+        >
+            <option value="">Toutes les îles</option>
+            <option value="Biscoe">Biscoe</option>
+            <option value="Dream">Dream</option>
+            <option value="Torgersen">Torgersen</option>
+        </select>
+
+        <select
+            id="sex"
+            class="select select-bordered select-accent w-full max-w-xs"
+        >
+            <option value="">Tous les sexes</option>
+            <option value="MALE">Mâle</option>
+            <option value="FEMALE">Femelle</option>
+        </select>
+    </div>
+
+    <figure class="flex flex-col items-center gap-4">
+        <!-- La div qui va recevoir le graphique -->
+        <div
+            id="graphique"
+            class="w-full flex justify-center min-h-[400px] overflow-x-auto"
+        >
+        </div>
+    </figure>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import penguins from "../data/penguins.json";
+
+    function initPage() {
+        // Récupération des 3 selects
+        const selectSpecies = document.querySelector(
+            "#species",
+        ) as HTMLSelectElement;
+        const selectIsland = document.querySelector(
+            "#island",
+        ) as HTMLSelectElement;
+        const selectSex = document.querySelector("#sex") as HTMLSelectElement;
+        const divGraphique = document.querySelector("#graphique");
+
+        // Sécurité si les éléments ne sont pas encore chargés
+        if (!selectSpecies || !selectIsland || !selectSex || !divGraphique)
+            return;
+
+        function renderPlot() {
+            // Lecture des 3 valeurs
+            const species = selectSpecies.value;
+            const island = selectIsland.value;
+            const sex = selectSex.value;
+
+            divGraphique.innerHTML = "";
+
+            const plot = Plot.plot({
+                color: { legend: true },
+                marks: [
+                    Plot.dot(penguins, {
+                        x: "culmen_length_mm",
+                        y: "culmen_depth_mm",
+                        stroke: "species",
+                        // Le filtre combine maintenant les 3 conditions avec des "ET" (&&)
+                        filter: (d) =>
+                            (species === "" || d.species === species) &&
+                            (island === "" || d.island === island) &&
+                            (sex === "" || d.sex === sex),
+                    }),
+                ],
+            });
+
+            divGraphique.append(plot);
+        }
+
+        // Ajout des écouteurs sur les 3 selects
+        selectSpecies.addEventListener("change", renderPlot);
+        selectIsland.addEventListener("change", renderPlot);
+        selectSex.addEventListener("change", renderPlot);
+
+        // Affichage initial
+        renderPlot();
+    }
+
+    document.addEventListener("DOMContentLoaded", initPage);
+    document.addEventListener("astro:page-load", initPage);
+</script>

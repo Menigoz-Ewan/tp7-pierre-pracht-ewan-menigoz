@@ -1,21 +1,90 @@
 ---
-import PlotFigure from "../components/PlotFigure.astro";
 import Layout from "../layouts/Layout.astro";
-import * as Plot from "@observablehq/plot";
-import penguins from "../assets/penguins.json";
 ---
 
 <Layout>
-  <h1 class="text-2xl">Test Astro et Plot (Observablehq)</h1>
-  <PlotFigure
-    options={{
-      marks: [
-        Plot.dot(penguins, {
-          x: "culmen_length_mm",
-          y: "culmen_depth_mm",
-          stroke: "species",
-        }),
-      ],
-    }}
-  />
+	<div class="hero mb-8">
+		<div class="hero-content text-center">
+			<div class="max-w-md">
+				<h1 class="text-4xl font-extrabold tracking-tight">
+					Datasets TP6
+				</h1>
+				<p class="py-4 text-base-content/70">
+					Exploration et visualisation interactive de données avec
+					Astro, Tailwind CSS, DaisyUI et Observable Plot.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+		<div
+			class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow"
+		>
+			<div class="card-body items-center text-center">
+				<div class="text-6xl mb-2">🐧</div>
+				<h2 class="card-title text-xl font-bold">Pingouins</h2>
+				<p class="text-sm text-base-content/70">
+					Analyse morphométrique des manchots de l'archipel de Palmer
+					: biométrie, espèces et répartition par île.
+				</p>
+				<div class="card-actions mt-4">
+					<a href="/penguins" class="btn btn-primary btn-sm"
+						>Explorer</a
+					>
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow"
+		>
+			<div class="card-body items-center text-center">
+				<div class="text-6xl mb-2">🍕</div>
+				<h2 class="card-title text-xl font-bold">Pizzas</h2>
+				<p class="text-sm text-base-content/70">
+					Données sur les commandes : chiffre d'affaires, répartition
+					par jour et impact des tarifs.
+				</p>
+				<div class="card-actions mt-4">
+					<a href="/pizzas" class="btn btn-secondary btn-sm"
+						>Explorer</a
+					>
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow"
+		>
+			<div class="card-body items-center text-center">
+				<div class="text-6xl mb-2">🌤️</div>
+				<h2 class="card-title text-xl font-bold">Météo</h2>
+				<p class="text-sm text-base-content/70">
+					Relevés météorologiques de Seattle : variations de
+					températures, types de ciel et corrélations vent/pluie.
+				</p>
+				<div class="card-actions mt-4">
+					<a href="/weather" class="btn btn-accent btn-sm">Explorer</a
+					>
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow"
+		>
+			<div class="card-body items-center text-center">
+				<div class="text-6xl mb-2">🚗</div>
+				<h2 class="card-title text-xl font-bold">Voitures</h2>
+				<p class="text-sm text-base-content/70">
+					Analyse des performances automobiles : puissance, poids et
+					accélération par nombre de cylindres.
+				</p>
+				<div class="card-actions mt-4">
+					<a href="/cars" class="btn btn-primary btn-sm">Explorer</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </Layout>

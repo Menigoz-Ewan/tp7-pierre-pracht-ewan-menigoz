@@ -1,0 +1,45 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li>Météo Simple</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">
+        1. Météo - Graphique Simple
+    </h1>
+
+    <figure class="flex flex-col items-center gap-4">
+        <div
+            id="graphique"
+            class="w-full flex justify-center min-h-[400px] overflow-x-auto"
+        >
+        </div>
+    </figure>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+
+    function initGraph() {
+        const divGraphique = document.querySelector("#graphique");
+        if (!divGraphique) return;
+
+        divGraphique.innerHTML = "";
+
+        const plot = Plot.rectY(
+            { length: 10000 },
+            Plot.binX({ y: "count" }, { x: Math.random }),
+        ).plot();
+
+        divGraphique.append(plot);
+    }
+
+    document.addEventListener("DOMContentLoaded", initGraph);
+    document.addEventListener("astro:page-load", initGraph);
+</script>

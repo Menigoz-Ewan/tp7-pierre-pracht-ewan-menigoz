@@ -1,0 +1,72 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import pizzasData from "../../data/pizzas.json";
+import Layout from "../../layouts/Layout.astro";
+
+const categoriesTraduction: Record<string, string> = {
+    Classic: "Classique",
+    Specialty: "Spéciale",
+    Vegetarian: "Végétarienne",
+};
+
+const translatedPizzas = pizzasData.map((d) => ({
+    ...d,
+    categoryFr: categoriesTraduction[d.category] ?? d.category,
+}));
+
+const revenusOptions = {
+    title: "Revenu total par catégorie",
+    subtitle: "Cumul des revenus en dollars par type de pizza",
+    ariaLabel: "Diagramme en barres des revenus par catégorie de pizza.",
+    marginLeft: 80,
+    x: { label: "Catégorie" },
+    y: { label: "↑ Revenu total ($)" },
+    color: {
+        domain: ["Classique", "Spéciale", "Végétarienne"],
+        range: ["#570df8", "#f000b8", "#37cdbe"],
+    },
+    marks: [
+        Plot.barY(
+            translatedPizzas,
+            Plot.groupX(
+                { y: "sum" },
+                { x: "categoryFr", y: "revenue", fill: "categoryFr" },
+            ),
+        ),
+        Plot.ruleY([0]),
+    ],
+};
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/pizzas">Pizzas</a></li>
+            <li>Revenus</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">
+        Revenus par catégorie
+    </h1>
+
+    <figure class="flex flex-col items-center gap-4">
+        <PlotFigure options={revenusOptions} />
+        <figcaption
+            class="max-w-2xl text-center text-sm opacity-80 leading-relaxed"
+        >
+            Ce diagramme montre le revenu total cumulé pour chaque catégorie de
+            pizza sur l'année 2020.
+        </figcaption>
+    </figure>
+
+    <div class="divider my-8"></div>
+
+    <div class="flex justify-end">
+        <a href="/pizzas/jours" class="btn btn-outline btn-secondary btn-sm"
+            >Commandes par jour →</a
+        >
+    </div>
+</Layout>

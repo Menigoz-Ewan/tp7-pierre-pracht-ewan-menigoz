@@ -1,0 +1,36 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import cars from "../../../data/cars.json";
+
+// On extrait la liste unique du nombre de cylindres, qu'on trie dans l'ordre croissant
+const cylindersList = [...new Set(cars.map((c) => c.cylinders))].sort(
+    (a, b) => a - b,
+);
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/cars">Voitures</a></li>
+            <li>Index des cylindres</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-8 text-3xl font-extrabold">
+        Choisissez un nombre de cylindres
+    </h1>
+
+    <div class="flex justify-center gap-4 flex-wrap">
+        {
+            cylindersList.map((cylinder) => (
+                <a
+                    href={`/cars/cylinders/${cylinder}`}
+                    class="btn btn-outline btn-primary"
+                >
+                    {cylinder} Cylindres
+                </a>
+            ))
+        }
+    </div>
+</Layout>

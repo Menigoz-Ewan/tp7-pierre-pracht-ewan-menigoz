@@ -1,0 +1,55 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <h1 class="text-3xl font-extrabold text-center mb-2">Pingouins</h1>
+    <p class="text-center text-gray-500 mb-10">
+        Analyse morphométrique des manchots de l'archipel de Palmer
+    </p>
+
+    <nav class="flex justify-center flex-wrap gap-4 mb-8">
+        <a href="/penguins/biometrie" class="btn btn-primary">Biométrie</a>
+        <a href="/penguins/especes" class="btn btn-secondary">Espèces</a>
+        <a href="/penguins/iles" class="btn btn-accent">Îles</a>
+        <a href="/penguins/slider" class="btn btn-neutral">Slider comparatif</a>
+    </nav>
+
+    <div class="divider max-w-xl mx-auto text-sm opacity-50 my-6">
+        Nouveaux graphiques côté client (TP4)
+    </div>
+
+    <nav class="flex justify-center flex-wrap gap-4 mb-10">
+        <a href="/simple" class="btn btn-sm btn-outline">1. Simple</a>
+        <a href="/simple-penguin" class="btn btn-sm btn-outline btn-primary"
+            >2. Simple Penguin</a
+        >
+        <a href="/penguin-filtre" class="btn btn-sm btn-outline btn-secondary"
+            >3. Penguin filtre</a
+        >
+        <a href="/penguin-multi" class="btn btn-sm btn-outline btn-accent"
+            >4. Penguin multi</a
+        >
+    </nav>
+
+    <div class="divider max-w-xl mx-auto text-sm opacity-50 my-6">TP6</div>
+
+    <nav class="flex justify-center flex-wrap gap-4 mb-10">
+        <a href="/penguins/tous" class="btn btn-sm btn-outline btn-info"
+            >Toutes les espèces (Onglets)</a
+        >
+        <a href="/penguins/specie" class="btn btn-sm btn-outline btn-success"
+            >Routes par Espèce</a
+        >
+        <a href="/penguins/island" class="btn btn-sm btn-outline btn-accent"
+            >Routes par Île</a
+        >
+        <a href="/penguins/sex" class="btn btn-sm btn-outline btn-secondary"
+            >Routes par Sexe</a
+        >
+    </nav>
+
+    <p class="text-center text-gray-400 text-sm">
+        Sélectionne un graphique ci-dessus pour explorer les données.
+    </p>
+</Layout>
