@@ -51,6 +51,13 @@ const { cylinder } = Astro.params;
         const currentCylinder = Number(container.getAttribute("data-cylinder"));
 
         const plot = Plot.plot({
+            // -- Début des ajouts pour l'accessibilité (a11y) --
+            title: `Voitures avec moteurs ${currentCylinder} cylindres`,
+            subtitle: "Relation entre la puissance (hp) et le poids (lb)",
+            caption: `Figure illustrant les caractéristiques des voitures équipées de moteurs ${currentCylinder} cylindres, colorées selon leur accélération (0-60 mph).`,
+            ariaLabel: `Nuage de points montrant le poids en fonction de la puissance pour les voitures à ${currentCylinder} cylindres.`,
+            // -- Fin des ajouts --
+
             color: { legend: true, scheme: "viridis", label: "0-60 mph (s)" },
             x: { label: "Puissance (hp)" },
             y: { label: "Poids (lb)" },

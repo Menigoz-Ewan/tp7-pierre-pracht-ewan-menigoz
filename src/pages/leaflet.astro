@@ -1,0 +1,74 @@
+---
+import Layout from "../layouts/Layout.astro";
+import "leaflet/dist/leaflet.css";
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li class="font-bold">Carte Leaflet</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-6 text-3xl font-extrabold">
+        Carte des établissements
+    </h1>
+    <p class="text-center text-sm text-base-content/70 mb-4">
+        Visualisation géographique des établissements d'enseignement supérieur avec Leaflet.js
+    </p>
+
+    <!-- Conteneur obligatoire pour Leaflet -->
+    <div
+        id="map"
+        class="rounded-xl shadow-lg border border-base-200 overflow-hidden"
+        style="height: 600px; width: 100%; z-index: 1;"
+    >
+    </div>
+</Layout>
+
+<script>
+    import L from "leaflet";
+    import listeEtablissements from "../assets/listeEtablissements.json";
+
+    function initMap() {
+        const container = document.getElementById("map");
+        if (!container) return;
+
+        // Évite de réinitialiser la carte si elle existe déjà (ex: navigation Astro)
+        if ((container as any)._leaflet_id) {
+            return;
+        }
+
+        // Création de la carte centrée sur la France
+        const map = L.map("map").setView([46.6033, 1.883], 6);
+
+        // Fond de carte OpenStreetMap
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution:
+                '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+
+        // Ajout des établissements sous forme de circleMarker pour un rendu fluide et esthétique
+        listeEtablissements.forEach((etab) => {
+            if (typeof etab.lat === "number" && typeof etab.lon === "number") {
+                const marker = L.circleMarker([etab.lat, etab.lon], {
+                    radius: 7,
+                    fillColor: "#3b82f6",
+                    color: "#1d4ed8",
+                    weight: 1.5,
+                    opacity: 1,
+                    fillOpacity: 0.75,
+                }).addTo(map);
+
+                marker.bindPopup(
+                    `<strong style="font-size:13px; color:#1e293b;">${etab.name}</strong><br/><span style="color:#64748b; font-size:11px;">Lat: ${etab.lat.toFixed(4)}, Lon: ${etab.lon.toFixed(4)}</span>`
+                );
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", initMap);
+    document.addEventListener("astro:page-load", initMap);
+</script>

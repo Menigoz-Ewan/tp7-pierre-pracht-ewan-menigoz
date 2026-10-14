@@ -1,0 +1,213 @@
+---
+import Layout from "../layouts/Layout.astro";
+import populationMain from "../assets/populationMain.json";
+
+// Extraction des options pour les 3 filtres
+const listePeriode = [
+    ...new Set(populationMain?.map((d) => d.Période)),
+].reverse();
+
+const listeSex = [
+    ...new Set(populationMain?.map((d) => d.Sex || d.Sexe)),
+];
+
+const listeAge = [
+    ...new Set(populationMain?.map((d) => d.Age)),
+];
+---
+
+<Layout>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li class="font-bold">Carte GeoJSON / Population</li>
+        </ul>
+    </div>
+
+    <h1 class="text-center mb-4 text-3xl font-extrabold">
+        Population par département (GeoJSON)
+    </h1>
+    <p class="text-center text-sm text-base-content/70 mb-8 max-w-2xl mx-auto">
+        Carte choroplèthe interactive exécutée côté client avec Observable Plot et Astro.
+        Filtrez les données par année, sexe et tranche d'âge pour observer les variations démographiques.
+    </p>
+
+    <!-- Contrôles SELECT -->
+    <div class="card bg-base-100 shadow-md border border-base-200 p-6 mb-8 max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div class="form-control w-full">
+                <label class="label font-semibold" for="periode">
+                    <span class="label-text">Année (Période)</span>
+                </label>
+                <select id="periode" class="select select-bordered w-full">
+                    {listePeriode.map((p, i) => (
+                        <option value={p} selected={i === 0}>{p}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label font-semibold" for="sexe">
+                    <span class="label-text">Sexe</span>
+                </label>
+                <select id="sexe" class="select select-bordered w-full">
+                    {listeSex.map((s, i) => (
+                        <option value={s} selected={i === 0}>{s}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label font-semibold" for="age">
+                    <span class="label-text">Tranche d'âge</span>
+                </label>
+                <select id="age" class="select select-bordered w-full">
+                    {listeAge.map((a, i) => (
+                        <option value={a} selected={i === 0}>{a}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label font-semibold" for="echelle">
+                    <span class="label-text">Échelle de couleur</span>
+                </label>
+                <select id="echelle" class="select select-bordered w-full">
+                    <option value="absolue" selected>Échelle globale (0 - 2,6 M)</option>
+                    <option value="relative">Échelle ajustée (Contraste)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteneur pour le rendu Observable Plot côté client -->
+    <div
+        id="graphique"
+        class="w-full flex flex-col justify-center items-center min-h-[620px] overflow-x-auto bg-base-100 rounded-2xl shadow-lg border border-base-200 p-6"
+    >
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import departements from "../assets/departements.geojson.json";
+    import populationMain from "../assets/populationMain.json";
+
+    // Maximum absolu de population sur l'ensemble du dataset (pour l'échelle globale)
+    const MAX_POPULATION_GLOBALE = Math.max(...populationMain.map((d: any) => d.Population));
+
+    function formatNumberCompact(d: number): string {
+        if (d === 0) return "0";
+        if (d >= 1_000_000) {
+            const val = (d / 1_000_000).toFixed(1).replace(".0", "").replace(".", ",");
+            return `${val} M`;
+        }
+        if (d >= 1_000) {
+            return `${Math.round(d / 1_000)} k`;
+        }
+        return Math.round(d).toLocaleString("fr-FR");
+    }
+
+    function updatePlot() {
+        const elmYear = document.getElementById("periode") as HTMLSelectElement | null;
+        const elmSex = document.getElementById("sexe") as HTMLSelectElement | null;
+        const elmAge = document.getElementById("age") as HTMLSelectElement | null;
+        const elmEchelle = document.getElementById("echelle") as HTMLSelectElement | null;
+        const container = document.getElementById("graphique");
+
+        if (!elmYear || !elmSex || !elmAge || !container) return;
+
+        const selectedYear = Number(elmYear.value);
+        const selectedSex = elmSex.value;
+        const selectedAge = elmAge.value;
+        const typeEchelle = elmEchelle ? elmEchelle.value : "absolue";
+
+        // Filtrer les données selon les 3 paramètres
+        const filtered = populationMain.filter(
+            (d: any) =>
+                d.Période === selectedYear &&
+                (d.Sex === selectedSex || d.Sexe === selectedSex) &&
+                d.Age === selectedAge
+        );
+
+        // Map d'accès direct code département -> valeur de population
+        const popMap = new Map<string, number>();
+        for (const row of filtered) {
+            popMap.set(String(row.Zone || row.code), row.Population);
+        }
+
+        container.innerHTML = "";
+
+        // Calcul du domaine pour la couleur
+        let colorDomain: [number, number];
+        if (typeEchelle === "absolue") {
+            // Échelle globale fixe : permet de voir instantanément le département s'éclaircir quand on filtre
+            colorDomain = [0, MAX_POPULATION_GLOBALE];
+        } else {
+            // Échelle relative ajustée au min/max de la sélection courante pour accentuer le contraste interne
+            const values = Array.from(popMap.values());
+            const minVal = values.length ? Math.min(...values) : 0;
+            const maxVal = values.length ? Math.max(...values) : 100000;
+            colorDomain = [minVal, maxVal];
+        }
+
+        const plot = Plot.plot({
+            // Accessibilité a11y (Étape 0)
+            title: `Population française par département (${selectedYear})`,
+            subtitle: `Sexe : ${selectedSex} | Tranche d'âge : ${selectedAge} (${typeEchelle === "absolue" ? "Échelle globale fixe" : "Échelle ajustée à la sélection"})`,
+            caption: `Carte choroplèthe interactive visualisant la population départementale selon les critères sélectionnés (${selectedSex}, ${selectedAge}, ${selectedYear}).`,
+            ariaLabel: `Carte de France métropolitaine représentant la population par département en ${selectedYear}.`,
+
+            width: 800,
+            height: 600,
+            projection: {
+                type: "conic-conformal",
+                domain: departements
+            },
+            color: {
+                type: "linear",
+                scheme: "blues",
+                label: "Population (habitants)",
+                legend: true,
+                width: 480,
+                domain: colorDomain,
+                ticks: 6,
+                tickFormat: formatNumberCompact
+            },
+            marks: [
+                Plot.geo(departements, {
+                    fill: (d: any) => popMap.get(String(d.properties.code)) ?? 0,
+                    stroke: "#cbd5e1",
+                    strokeWidth: 0.6,
+                    title: (d: any) => {
+                        const code = String(d.properties.code);
+                        const nom = d.properties.nom;
+                        const val = popMap.get(code);
+                        return `${nom} (${code})\nPopulation : ${val !== undefined ? val.toLocaleString("fr-FR") + " hab." : "Donnée indisponible"}`;
+                    },
+                    tip: true
+                })
+            ]
+        });
+
+        container.append(plot);
+    }
+
+    function setupListeners() {
+        updatePlot();
+
+        const elmYear = document.getElementById("periode");
+        const elmSex = document.getElementById("sexe");
+        const elmAge = document.getElementById("age");
+        const elmEchelle = document.getElementById("echelle");
+
+        elmYear?.addEventListener("change", updatePlot);
+        elmSex?.addEventListener("change", updatePlot);
+        elmAge?.addEventListener("change", updatePlot);
+        elmEchelle?.addEventListener("change", updatePlot);
+    }
+
+    document.addEventListener("DOMContentLoaded", setupListeners);
+    document.addEventListener("astro:page-load", setupListeners);
+</script>

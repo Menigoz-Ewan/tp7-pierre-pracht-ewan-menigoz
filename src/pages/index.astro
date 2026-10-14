@@ -86,5 +86,35 @@ import Layout from "../layouts/Layout.astro";
 				</div>
 			</div>
 		</div>
+
+		<div
+			class="card bg-base-100 shadow-xl border border-primary/30 hover:shadow-2xl transition-shadow"
+		>
+			<div class="card-body items-center text-center">
+				<div class="text-6xl mb-2">🗺️</div>
+				<h2 class="card-title text-xl font-bold">Carte Leaflet</h2>
+				<p class="text-sm text-base-content/70">
+					Cartographie interactive des établissements universitaires français avec Leaflet.js et OpenStreetMap.
+				</p>
+				<div class="card-actions mt-4">
+					<a href="/leaflet" class="btn btn-primary btn-sm">Voir la carte</a>
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="card bg-base-100 shadow-xl border border-secondary/30 hover:shadow-2xl transition-shadow"
+		>
+			<div class="card-body items-center text-center">
+				<div class="text-6xl mb-2">📊</div>
+				<h2 class="card-title text-xl font-bold">GeoJSON / Population</h2>
+				<p class="text-sm text-base-content/70">
+					Visualisation choroplèthe interactive de la population par département avec filtres dynamiques (Année, Sexe, Âge).
+				</p>
+				<div class="card-actions mt-4">
+					<a href="/geojson" class="btn btn-secondary btn-sm">Explorer</a>
+				</div>
+			</div>
+		</div>
 	</div>
 </Layout>
